@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>My_Recipe_Keeper.Core</RootNamespace>
+    <!-- No Maui/Android/iOS references here on purpose: keeps repository/scraper/backup
+         logic runnable under plain `dotnet test` without the mobile workloads installed. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Same SQLite pinning as Pok_E_List: desktop native binary referenced directly at latest so
+         core/provider resolve to 3.0.5 (GHSA-2m69-gcr7-jv3q). The Android native binary is pinned
+         separately in the Maui head (My_Recipe_Keeper.csproj). -->
+    <PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+  </ItemGroup>
+
+</Project>

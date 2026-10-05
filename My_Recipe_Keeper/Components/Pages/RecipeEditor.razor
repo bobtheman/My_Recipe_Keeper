@@ -1,0 +1,171 @@
+@page "/recipe/add"
+@page "/recipe/edit/{Id:int}"
+@inject IRecipeRepository RecipeRepository
+@inject IRecipeScraperService ScraperService
+@inject IAlertService AlertService
+@inject IMediaTextService MediaTextService
+@inject IImagePickerService ImagePicker
+@inject ISharedLinkInbox SharedLinkInbox
+@inject ISettingsService SettingsService
+@inject ITranslationService TranslationService
+@inject IRecipeTranslator RecipeTranslator
+@inject TranslationOptions TranslationOptions
+@inject AutoBackupRunner AutoBackup
+@inject NavigationManager Nav
+
+<div class="page-top">
+    <button class="icon-btn" @onclick="GoBack" aria-label="Back"><i class="bi bi-arrow-left"></i></button>
+    <h3>@(IsNew ? "New recipe" : "Edit recipe")</h3>
+    @if (!IsNew)
+    {
+        <button class="icon-btn" style="color:var(--danger);" @onclick="DeleteAsync" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+    }
+</div>
+
+@if (_notFound)
+{
+    <div class="empty-state"><span class="big-emoji">🤷</span><p>That recipe has gone missing.</p></div>
+    return;
+}
+
+@if (IsNew)
+{
+    <div class="panel panel-import">
+        <div class="panel-title">🔗 Grab it from a link</div>
+        <p>Paste a recipe website, Instagram, TikTok or Facebook link — we'll pull out the ingredients and method.</p>
+        <div style="display:flex;gap:0.5rem;">
+            <input type="url" placeholder="https://…" @bind="_importText" @bind:event="oninput" @onkeydown="OnImportKeyDown" />
+            <button class="btn-app btn-app-dark" disabled="@(_importing || string.IsNullOrWhiteSpace(_importText))" @onclick="ImportAsync">
+                @if (_importing)
+                {
+                    <i class="bi bi-arrow-repeat spin"></i>
+                }
+                else
+                {
+                    <i class="bi bi-magic"></i>
+                }
+            </button>
+        </div>
+    </div>
+}
+
+<div class="panel panel-ocr">
+    <div class="panel-title">📸 Recipe in the video?</div>
+    @if (_ocrText is null)
+    {
+        <p class="field-hint" style="margin:0 0 0.6rem;font-size:0.82rem;">
+            Screen-record the reel (or screenshot the recipe bits) and share it to this app, or pick it here.
+            We'll read the text on screen for free, right on your phone.
+        </p>
+        <button class="btn-app btn-app-outline btn-block" disabled="@_ocrBusy" @onclick="PickMediaAsync">
+            @if (_ocrBusy)
+            {
+                <i class="bi bi-arrow-repeat spin"></i> @_ocrStatus
+            }
+            else
+            {
+                <i class="bi bi-camera-reels-fill"></i> <span>Pick screenshots or recording</span>
+            }
+        </button>
+    }
+    else
+    {
+        <p class="field-hint" style="margin:0 0 0.4rem;font-size:0.82rem;">
+            Here's what we read — each blank-line gap is one step. Delete anything that isn't recipe (like packet labels), then add it.
+        </p>
+        <textarea style="min-height:200px;font-size:0.85rem;" @bind="_ocrText"></textarea>
+        <div class="btn-row" style="margin-top:0.5rem;">
+            <button class="btn-app btn-app-outline" @onclick="DiscardOcr">Discard</button>
+            <button class="btn-app btn-app-primary" @onclick="AddOcrToRecipeAsync"><i class="bi bi-plus-lg"></i> Add to recipe</button>
+        </div>
+    }
+</div>
+
+@if (_importing)
+{
+    <div class="cooking-loader"><span class="pot">🥘</span><p class="text-muted">Reading the recipe…</p></div>
+}
+
+@if (_banner is not null)
+{
+    <div class="banner @_bannerClass">@_banner</div>
+}
+
+<div class="panel">
+    <div class="panel-title" style="justify-content:space-between;">
+        <span>📋 The basics</span>
+        <button class="chip" disabled="@_translating" @onclick="TranslateRecipeAsync" title="Translate this recipe to English">
+            @if (_translating)
+            {
+                <i class="bi bi-arrow-repeat spin"></i>
+            }
+            else
+            {
+                <span>🌐</span>
+            }
+            Translate
+        </button>
+    </div>
+    <div class="field-group">
+        <label>Recipe name</label>
+        <input type="text" placeholder="Nan's famous lasagne" @bind="_recipe.Title" />
+    </div>
+    <div class="field-group">
+        <label>Description</label>
+        <textarea style="min-height:70px;" placeholder="What makes it special?" @bind="_recipe.Description"></textarea>
+    </div>
+    <div class="field-group">
+        <label>Category</label>
+        <input type="text" placeholder="Dinner, Dessert, Baking…" @bind="_recipe.Category" />
+    </div>
+    <div class="field-row">
+        <div class="field-group">
+            <label>Serves</label>
+            <input type="text" placeholder="4" @bind="_recipe.Servings" />
+        </div>
+        <div class="field-group">
+            <label>Prep</label>
+            <input type="text" placeholder="10 mins" @bind="_recipe.PrepTime" />
+        </div>
+        <div class="field-group">
+            <label>Cook</label>
+            <input type="text" placeholder="30 mins" @bind="_recipe.CookTime" />
+        </div>
+    </div>
+    <div class="settings-row" style="border:none;padding-top:0;">
+        <span>❤️ Favourite</span>
+        <input type="checkbox" @bind="_recipe.IsFavorite" />
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title">🥕 Ingredients</div>
+    <textarea style="min-height:170px;" placeholder="One per line, e.g.&#10;200g spaghetti&#10;2 cloves garlic&#10;For the sauce:&#10;1 tin tomatoes" @bind="_recipe.IngredientsText"></textarea>
+    <div class="field-hint">One per line. End a line with a colon (e.g. "For the sauce:") to make a group heading.</div>
+</div>
+
+<div class="panel">
+    <div class="panel-title">👩‍🍳 Method</div>
+    <textarea style="min-height:170px;" placeholder="One step per line" @bind="_recipe.InstructionsText"></textarea>
+    <div class="field-hint">One step per line — they get numbered automatically.</div>
+</div>
+
+<div class="panel">
+    <div class="panel-title">📝 Extras</div>
+    <div class="field-group">
+        <label>Notes</label>
+        <textarea style="min-height:70px;" placeholder="Swaps, tips, what the kids thought…" @bind="_recipe.Notes"></textarea>
+    </div>
+    <div class="field-group">
+        <label>Photo link</label>
+        <input type="url" placeholder="https://…/photo.jpg" @bind="_recipe.ImageUrl" />
+    </div>
+    <div class="field-group" style="margin-bottom:0;">
+        <label>Original link</label>
+        <input type="url" placeholder="https://…" @bind="_recipe.SourceUrl" />
+    </div>
+</div>
+
+<button class="btn-app btn-app-primary btn-block" style="margin-bottom:1rem;padding:0.8rem;" disabled="@_saving" @onclick="SaveAsync">
+    <i class="bi bi-bookmark-heart-fill"></i> @(_saving ? "Saving…" : "Save to my cookbook")
+</button>

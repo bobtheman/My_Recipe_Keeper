@@ -1,0 +1,159 @@
+@page "/recipe/{Id:int}"
+@implements IDisposable
+@inject IRecipeRepository RecipeRepository
+@inject IRecipeShareFormatter ShareFormatter
+@inject IShareService ShareService
+@inject ISettingsService SettingsService
+@inject IBrowserLauncher BrowserLauncher
+@inject AutoBackupRunner AutoBackup
+@inject NavigationManager Nav
+
+@if (_recipe is null)
+{
+    @if (_loaded)
+    {
+        <div class="empty-state"><span class="big-emoji">🤷</span><p>That recipe has gone missing.</p>
+            <button class="btn-app btn-app-primary" @onclick="GoHome">Back to recipes</button></div>
+    }
+    else
+    {
+        <div class="cooking-loader"><span class="pot">🍲</span></div>
+    }
+    return;
+}
+
+<div class="hero">
+    @if (!string.IsNullOrEmpty(_recipe.ImageUrl) && !_imageBroken)
+    {
+        <img src="@_recipe.ImageUrl" alt="" @onerror="() => _imageBroken = true" />
+    }
+    else
+    {
+        <div class="hero-placeholder" style="background:@RecipeVisuals.PlaceholderBackground(_recipe)">@RecipeVisuals.EmojiFor(_recipe)</div>
+    }
+    <div class="hero-actions">
+        <button class="icon-btn" @onclick="GoHome" aria-label="Back"><i class="bi bi-arrow-left"></i></button>
+        <div style="display:flex;gap:0.5rem;">
+            <button class="icon-btn @(_recipe.IsFavorite ? "fav-on" : "")" @onclick="ToggleFavoriteAsync" aria-label="Favourite">
+                <i class="bi @(_recipe.IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
+            </button>
+            <button class="icon-btn" @onclick="Edit" aria-label="Edit"><i class="bi bi-pencil-fill"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="recipe-sheet">
+    <h2>@_recipe.Title</h2>
+    @if (!string.IsNullOrWhiteSpace(_recipe.Description))
+    {
+        <p class="recipe-desc">@_recipe.Description</p>
+    }
+
+    @if (HasFacts)
+    {
+        <div class="fact-row">
+            @if (!string.IsNullOrWhiteSpace(_recipe.Servings))
+            {
+                <div class="fact"><span>🍽️ Serves</span><b>@_recipe.Servings</b></div>
+            }
+            @if (!string.IsNullOrWhiteSpace(_recipe.PrepTime))
+            {
+                <div class="fact"><span>🔪 Prep</span><b>@_recipe.PrepTime</b></div>
+            }
+            @if (!string.IsNullOrWhiteSpace(_recipe.CookTime))
+            {
+                <div class="fact"><span>🔥 Cook</span><b>@_recipe.CookTime</b></div>
+            }
+            @if (!string.IsNullOrWhiteSpace(_recipe.TotalTime))
+            {
+                <div class="fact"><span>⏱ Total</span><b>@_recipe.TotalTime</b></div>
+            }
+            @if (!string.IsNullOrWhiteSpace(_recipe.Category))
+            {
+                <div class="fact"><span>🏷️ Type</span><b>@_recipe.Category</b></div>
+            }
+        </div>
+    }
+
+    @if (_recipe.Ingredients.Count > 0)
+    {
+        <div class="panel">
+            <div class="panel-title">🥕 Ingredients</div>
+            <div class="field-hint" style="margin:-0.4rem 0 0.4rem;">Tap what you already have — it's left off the shopping list.</div>
+            <ul class="ingredient-list">
+                @foreach (var line in _recipe.Ingredients)
+                {
+                    if (IsGroupLabel(line))
+                    {
+                        <li class="group-label">@line.TrimEnd(':')</li>
+                    }
+                    else
+                    {
+                        var have = _have.Contains(line);
+                        <li class="@(have ? "have" : "")" @onclick="() => ToggleHave(line)">
+                            <span class="tickbox">@if (have) { <i class="bi bi-check-lg"></i> }</span>
+                            <span>@line</span>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    @if (_recipe.Instructions.Count > 0)
+    {
+        <div class="panel">
+            <div class="panel-title">👩‍🍳 Method</div>
+            <ol class="step-list">
+                @{ var step = 1; }
+                @foreach (var line in _recipe.Instructions)
+                {
+                    if (IsGroupLabel(line))
+                    {
+                        <li class="group-label">@line.TrimEnd(':')</li>
+                    }
+                    else
+                    {
+                        <li><span class="step-num">@(step++)</span><span>@line</span></li>
+                    }
+                }
+            </ol>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(_recipe.Notes))
+    {
+        <div class="panel">
+            <div class="panel-title">📝 Notes</div>
+            <div style="white-space:pre-wrap;font-size:0.92rem;">@_recipe.Notes</div>
+        </div>
+    }
+
+    <div class="panel share-panel">
+        <div class="panel-title">📤 Send it</div>
+        <div class="segmented">
+            <button class="@(_format == ShareFormat.ShoppingList ? "on" : "")" @onclick="() => _format = ShareFormat.ShoppingList">🛒 Shopping list</button>
+            <button class="@(_format == ShareFormat.FullRecipe ? "on" : "")" @onclick="() => _format = ShareFormat.FullRecipe">📖 Full recipe</button>
+        </div>
+        <div class="share-preview">@ShareText</div>
+        <button class="btn-app btn-app-whatsapp btn-block" style="margin-bottom:0.5rem;" @onclick="ShareWhatsAppAsync">
+            <i class="bi bi-whatsapp"></i> Send on WhatsApp
+        </button>
+        <div class="btn-row">
+            <button class="btn-app btn-app-outline" @onclick="ShareSheetAsync"><i class="bi bi-share-fill"></i> Notes / other</button>
+            <button class="btn-app btn-app-outline" @onclick="CopyAsync"><i class="bi bi-clipboard-heart"></i> Copy</button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_recipe.SourceUrl))
+    {
+        <button class="btn-app btn-app-outline btn-block" style="margin-bottom:1rem;" @onclick="OpenSourceAsync">
+            <i class="bi bi-box-arrow-up-right"></i> View original
+        </button>
+    }
+</div>
+
+@if (_toast is not null)
+{
+    <div class="toast">@_toast</div>
+}

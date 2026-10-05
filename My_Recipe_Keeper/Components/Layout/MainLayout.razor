@@ -1,0 +1,30 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject ISettingsService SettingsService
+@inject ISharedLinkInbox SharedLinkInbox
+@inject NavigationManager Nav
+@inject IJSRuntime JsRuntime
+
+<div class="page">
+    <main>
+        <article class="content">
+            @Body
+        </article>
+    </main>
+
+    <nav class="bottom-nav">
+        <NavLink class="nav-item" href="/" Match="NavLinkMatch.All">
+            <i class="bi bi-journal-bookmark-fill"></i>
+            <span>Recipes</span>
+        </NavLink>
+        <NavLink class="nav-item nav-item-fab" href="/recipe/add" title="Add recipe" aria-label="Add recipe">
+            <span class="fab">
+                <span class="fab-egg"><i class="bi bi-plus-lg"></i></span>
+            </span>
+        </NavLink>
+        <NavLink class="nav-item" href="/settings">
+            <i class="bi bi-gear-fill"></i>
+            <span>Settings</span>
+        </NavLink>
+    </nav>
+</div>

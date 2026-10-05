@@ -1,0 +1,80 @@
+@page "/settings"
+@inject IGoogleBackupService BackupService
+@inject ISettingsService SettingsService
+@inject IRecipeRepository RecipeRepository
+@inject IJSRuntime JsRuntime
+
+<div class="page-top">
+    <h3>⚙️ Settings</h3>
+</div>
+
+<div class="panel">
+    <div class="panel-title">☁️ Google Drive backup</div>
+
+    @if (_signedIn)
+    {
+        <p class="text-muted" style="font-size:0.85rem;">Signed in. Backups live in a private app folder in your Drive — only My Recipe Keeper can see them.</p>
+        <div class="btn-row">
+            <button class="btn-app btn-app-primary" disabled="@_busy" @onclick="BackupAsync">
+                @(_busy ? "Working…" : "Back up now")
+            </button>
+            <button class="btn-app btn-app-outline" disabled="@_busy" @onclick="RestoreAsync">
+                Restore latest
+            </button>
+        </div>
+        <button class="btn-app btn-app-outline btn-block" style="margin-top:0.5rem;" disabled="@_busy" @onclick="SignOutAsync">
+            Sign out
+        </button>
+    }
+    else
+    {
+        <p class="text-muted" style="font-size:0.85rem;">Sign in to keep your cookbook safe in your own Google Drive.</p>
+        <button class="btn-app btn-app-primary btn-block" disabled="@_busy" @onclick="SignInAsync">
+            <i class="bi bi-google"></i> @(_busy ? "Working…" : "Sign in with Google")
+        </button>
+    }
+
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <div class="banner @(_statusIsError ? "banner-error" : "banner-ok")" style="margin:0.6rem 0 0;">@_status</div>
+    }
+</div>
+
+<div class="panel">
+    <div class="panel-title">🎨 Preferences</div>
+    <div class="settings-row">
+        <span>Auto backup after changes</span>
+        <input type="checkbox" checked="@_settings.AutoBackupEnabled" @onchange="OnAutoBackupChanged" />
+    </div>
+    <div class="settings-row">
+        <span>Add original link when sharing</span>
+        <input type="checkbox" checked="@_settings.IncludeSourceLinkWhenSharing" @onchange="OnIncludeLinkChanged" />
+    </div>
+    <div class="settings-row">
+        <span>
+            Translate recipes to English
+            <div class="field-hint">Free Google Translate — recipe text is sent to Google to translate.</div>
+        </span>
+        <input type="checkbox" checked="@_settings.AutoTranslate" @onchange="OnAutoTranslateChanged" />
+    </div>
+    <div class="settings-row">
+        <span>Theme</span>
+        <select class="select-app" @bind="_settings.ThemeMode" @bind:after="OnThemeChangedAsync">
+            <option value="System">System</option>
+            <option value="Light">Light</option>
+            <option value="Dark">Dark</option>
+        </select>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title">🍳 About</div>
+    <div class="settings-row">
+        <span>Version</span>
+        <span class="text-muted">@AppInfo.Current.VersionString (build @AppInfo.Current.BuildString)</span>
+    </div>
+    <div class="settings-row">
+        <span>Recipes saved</span>
+        <span class="text-muted">@_recipeCount</span>
+    </div>
+</div>

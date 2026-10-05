@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>My Recipe Keeper</title>
+    <base href="/" />
+    <script>
+        // Applies the light/dark theme via data-theme on <html> (app.css keys off it). "System"
+        // resolves against the OS preference. Called once here as a best guess before Blazor boots,
+        // then again by MainLayout with the user's saved AppSettingsModel.ThemeMode.
+        window.recipeKeeper = {
+            applyTheme: function (mode) {
+                var resolved = mode;
+                if (!resolved || resolved === 'System') {
+                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    resolved = prefersDark ? 'Dark' : 'Light';
+                }
+                document.documentElement.setAttribute('data-theme', resolved.toLowerCase());
+            },
+            scrollTop: function () {
+                var main = document.querySelector('main');
+                if (main) { main.scrollTop = 0; }
+            }
+        };
+        window.recipeKeeper.applyTheme('System');
+    </script>
+    <link rel="stylesheet" href="bootstrap-icons.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="My_Recipe_Keeper.styles.css" />
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+    <div class="status-bar-safe-area"></div>
+
+    <div id="app"><div class="cooking-loader"><span class="pot">🍲</span><p>Warming up the kitchen…</p></div></div>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        Something burnt in the kitchen.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+
+</body>
+
+</html>

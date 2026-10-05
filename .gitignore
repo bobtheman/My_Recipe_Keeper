@@ -1,0 +1,15 @@
+## .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+## Keystores and signing — never commit
+*.keystore
+*.jks
+*.pfx
+
+## Secrets — appsettings.json ships with placeholder values in source control;
+## real Google client id/secret are injected per-build (CI secret or local override), never committed.
+appsettings*.local.json

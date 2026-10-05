@@ -1,0 +1,89 @@
+@page "/"
+@inject IRecipeRepository RecipeRepository
+@inject NavigationManager Nav
+
+<div class="app-header">
+    <div class="app-header-card">
+        <p class="app-header-title">What's cooking?</p>
+        <div class="app-header-sub">@_totalCount @(_totalCount == 1 ? "recipe" : "recipes") in your cookbook</div>
+    </div>
+</div>
+
+<div class="search-bar">
+    <i class="bi bi-search"></i>
+    <input type="text" placeholder="Search recipes or ingredients…" @bind="_searchText" @bind:event="oninput" @bind:after="OnSearchChangedAsync" />
+    @if (!string.IsNullOrEmpty(_searchText))
+    {
+        <button class="icon-btn" style="width:32px;height:32px;border:none;" @onclick="ClearSearchAsync" aria-label="Clear search">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    }
+</div>
+
+<div class="chip-row">
+    <button class="chip @(!_favoriteOnly ? "on" : "")" @onclick="() => SetFavoriteOnlyAsync(false)">🍽️ All</button>
+    <button class="chip @(_favoriteOnly ? "on" : "")" @onclick="() => SetFavoriteOnlyAsync(true)">❤️ Favourites</button>
+    <NavLink class="chip chip-static" href="/recipe/add">🔗 Import a link</NavLink>
+</div>
+
+@if (_loading)
+{
+    <div class="cooking-loader"><span class="pot">🍲</span><p class="text-muted">Stirring the pot…</p></div>
+}
+else if (_page.Items.Count == 0)
+{
+    <div class="empty-state">
+        @if (string.IsNullOrWhiteSpace(_searchText) && !_favoriteOnly)
+        {
+            <span class="big-emoji">🥄</span>
+            <p>Your cookbook is empty!</p>
+            <div class="text-muted" style="font-size:0.85rem;margin-bottom:1rem;">
+                Share a recipe link from Instagram, TikTok or any website straight to this app, or paste one in.
+            </div>
+            <button class="btn-app btn-app-primary" @onclick="AddRecipe"><i class="bi bi-plus-lg"></i> Add your first recipe</button>
+        }
+        else
+        {
+            <span class="big-emoji">🔍</span>
+            <p>Nothing in the pantry matches that.</p>
+        }
+    </div>
+}
+else
+{
+    <div class="recipe-grid">
+        @foreach (var recipe in _page.Items)
+        {
+            <div class="recipe-card" @onclick="() => OpenRecipe(recipe.Id)">
+                @if (!string.IsNullOrEmpty(recipe.ImageUrl) && !_brokenImages.Contains(recipe.Id))
+                {
+                    <img class="recipe-card-img" src="@recipe.ImageUrl" alt="" loading="lazy" @onerror="() => _brokenImages.Add(recipe.Id)" />
+                }
+                else
+                {
+                    <div class="recipe-card-placeholder" style="background:@RecipeVisuals.PlaceholderBackground(recipe)">@RecipeVisuals.EmojiFor(recipe)</div>
+                }
+                @if (recipe.IsFavorite)
+                {
+                    <span class="fav-sticker"><i class="bi bi-heart-fill"></i></span>
+                }
+                <div class="recipe-card-body">
+                    <div class="recipe-card-title">@recipe.Title</div>
+                    <div class="recipe-card-meta">@CardMeta(recipe)</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (_page.TotalCount > PageSize)
+    {
+        <div class="btn-row" style="margin-top:1rem;">
+            <button class="btn-app btn-app-outline" disabled="@(_currentPage <= 1)" @onclick="() => GoToPageAsync(_currentPage - 1)">
+                <i class="bi bi-chevron-left"></i> Prev
+            </button>
+            <button class="btn-app btn-app-outline" disabled="@(_currentPage * PageSize >= _page.TotalCount)" @onclick="() => GoToPageAsync(_currentPage + 1)">
+                Next <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    }
+}

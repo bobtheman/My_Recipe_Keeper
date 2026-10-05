@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="My_Recipe_Keeper.Core/My_Recipe_Keeper.Core.csproj" />
+  <Project Path="My_Recipe_Keeper/My_Recipe_Keeper.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="My_Recipe_Keeper_Unit_Test/My_Recipe_Keeper_Unit_Test.csproj" />
+</Solution>
