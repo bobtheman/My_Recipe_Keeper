@@ -18,7 +18,7 @@ Android (.NET MAUI Blazor Hybrid) cookbook: import recipes from links, edit them
 Share a link from any app → pick **My Recipe Keeper** → it opens the importer automatically.
 
 ## Versioning
-Same as Pok_E_List: `ApplicationDisplayVersion` / `ApplicationVersion` in `My_Recipe_Keeper.csproj`.
+`ApplicationDisplayVersion` / `ApplicationVersion` in `My_Recipe_Keeper.csproj`.
 Release Android package builds run `Scripts/RenameAPK.ps1` (→ `My_Recipe_Keeper_<display>_<build>.apk/.aab`) then `Scripts/IncrementVersion.ps1` (bumps `ApplicationVersion` for next release).
 
 ## Google Drive backup
