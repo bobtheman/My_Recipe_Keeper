@@ -91,6 +91,14 @@
     <div class="banner @_bannerClass">@_banner</div>
 }
 
+@if (!ShowForm)
+{
+    <button class="btn-app btn-app-outline btn-block" style="margin-bottom:1rem;" @onclick="StartFromScratch">
+        <i class="bi bi-pencil-fill"></i> <span>Enter my own</span>
+    </button>
+    return;
+}
+
 <div class="panel">
     <div class="panel-title" style="justify-content:space-between;">
         <span>📋 The basics</span>

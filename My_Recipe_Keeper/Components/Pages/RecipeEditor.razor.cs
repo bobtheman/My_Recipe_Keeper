@@ -32,7 +32,14 @@ namespace My_Recipe_Keeper.Components.Pages
         private string _bannerClass = "banner-ok";
         private string? _lastAutoImported;
 
+        private bool _showForm;
+
         private bool IsNew => Id is null;
+
+        // New recipe: the form stays hidden until an import/OCR result arrives or the user chooses to type their own.
+        private bool ShowForm => !IsNew || _showForm;
+
+        private void StartFromScratch() => _showForm = true;
 
         protected override async Task OnParametersSetAsync()
         {
@@ -50,6 +57,7 @@ namespace My_Recipe_Keeper.Components.Pages
                 _recipe = new RecipeEntity();
                 _notFound = false;
                 _banner = null;
+                _showForm = false;
             }
 
             // A second share while this page is already open changes only the query string, so this
@@ -162,6 +170,7 @@ namespace My_Recipe_Keeper.Components.Pages
             }
 
             _ocrText = null;
+            _showForm = true;
             var translatedNote = translatedFrom is null ? string.Empty : $" 🌐 Translated from {LanguageName(translatedFrom)}.";
             SetBanner($"🎉 Added {parsed.Ingredients.Count} ingredients and {parsed.Instructions.Count} steps — tweak anything OCR got wrong, then save.{translatedNote}", "banner-ok");
         }
@@ -233,7 +242,7 @@ namespace My_Recipe_Keeper.Components.Pages
                 var result = await ScraperService.ScrapeAsync(_importText, await TranslateTargetAsync());
                 if (!result.Success)
                 {
-                    SetBanner($"😕 {result.Error} You can still type it in below.", "banner-error");
+                    SetBanner($"😕 {result.Error} You can still enter it yourself below.", "banner-error");
                     return;
                 }
 
@@ -244,6 +253,7 @@ namespace My_Recipe_Keeper.Components.Pages
 
                 // Keep anything the user already typed; scraped values fill the gaps.
                 _recipe = Merge(_recipe, scraped);
+                _showForm = true;
 
                 var message = result.Source switch
                 {

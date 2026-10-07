@@ -38,12 +38,8 @@ namespace My_Recipe_Keeper.Core.Services
         private readonly ScraperOptions _options;
         private readonly ITranslationService? _translationService;
 
-        public RecipeScraperService(HttpClient httpClient, ScraperOptions options)
-            : this(httpClient, options, null)
-        {
-        }
-
-        public RecipeScraperService(HttpClient httpClient, ScraperOptions options, ITranslationService? translationService)
+        // Single public constructor on purpose: typed-HttpClient activation throws when two constructors both accept HttpClient.
+        public RecipeScraperService(HttpClient httpClient, ScraperOptions options, ITranslationService? translationService = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _options = options ?? throw new ArgumentNullException(nameof(options));
