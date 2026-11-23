@@ -38,7 +38,7 @@ namespace My_Recipe_Keeper
 
         public static string PlaceholderBackground(RecipeEntity recipe)
         {
-            string[] colors = { "#FFE1CC", "#FFF1C2", "#DDF3E4", "#FFD9E4", "#E4E8FF" };
+            string[] colors = { "#E3EBDD", "#FFF1C2", "#DDF3E4", "#FFD9E4", "#E4E8FF" };
             return colors[Math.Abs(recipe.Title.Length + recipe.Id) % colors.Length];
         }
     }

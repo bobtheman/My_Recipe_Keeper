@@ -5,11 +5,11 @@
 @inject IJSRuntime JsRuntime
 
 <div class="page-top">
-    <h3>⚙️ Settings</h3>
+    <h3>Settings</h3>
 </div>
 
 <div class="panel">
-    <div class="panel-title">☁️ Google Drive backup</div>
+    <div class="panel-title">Google Drive backup</div>
 
     @if (_signedIn)
     {
@@ -41,7 +41,7 @@
 </div>
 
 <div class="panel">
-    <div class="panel-title">🎨 Preferences</div>
+    <div class="panel-title">Preferences</div>
     <div class="settings-row">
         <span>Auto backup after changes</span>
         <input type="checkbox" checked="@_settings.AutoBackupEnabled" @onchange="OnAutoBackupChanged" />
@@ -68,7 +68,7 @@
 </div>
 
 <div class="panel">
-    <div class="panel-title">🍳 About</div>
+    <div class="panel-title">About</div>
     <div class="settings-row">
         <span>Version</span>
         <span class="text-muted">@AppInfo.Current.VersionString (build @AppInfo.Current.BuildString)</span>

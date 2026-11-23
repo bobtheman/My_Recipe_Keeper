@@ -14,8 +14,8 @@
     --surface-alt: #FFEBD6;
     --text-primary: #3B2A20;
     --text-muted: #8A6F5E;
-    --accent: #FF7A45;
-    --accent-dark: #E85D2A;
+    --accent: #7A9A6E;
+    --accent-dark: #5B7852;
     --herb: #3FA66B;
     --mustard: #FFC145;
     --berry: #FF5C8A;
@@ -23,7 +23,7 @@
     --success: #2E9A5C;
     --border: #F1D9C2;
     --shadow: 0 6px 18px rgba(150, 80, 30, 0.12);
-    --gingham: rgba(255, 92, 70, 0.55);
+    --gingham: rgba(122, 154, 110, 0.55);
     --radius-lg: 22px;
     --radius-md: 14px;
     --radius-sm: 10px;
@@ -36,8 +36,8 @@
     --surface-alt: #3A2C24;
     --text-primary: #FBEFE4;
     --text-muted: #BFA290;
-    --accent: #FF8A5B;
-    --accent-dark: #FF7A45;
+    --accent: #8FAE82;
+    --accent-dark: #A3BE96;
     --herb: #5CC488;
     --mustard: #FFCD5E;
     --berry: #FF7AA0;
@@ -45,7 +45,7 @@
     --success: #5CC488;
     --border: #47362C;
     --shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-    --gingham: rgba(255, 110, 80, 0.35);
+    --gingham: rgba(143, 174, 130, 0.35);
 }
 
 .status-bar-safe-area {
@@ -112,19 +112,11 @@ a {
     text-decoration: none;
 }
 
-/* ---------- Header: gingham tablecloth strip ---------- */
 .app-header {
-    margin: 0 -1rem 1rem;
-    padding: 1.1rem 1rem 1.4rem;
+    margin: 0 0 1rem;
+    /* No env(safe-area-inset-top): MainActivity already pads the WebView below the status bar. */
+    padding: 0.75rem 0 0;
     position: relative;
-    background-color: var(--surface);
-    background-image:
-        repeating-linear-gradient(0deg, var(--gingham) 0 12px, transparent 12px 24px),
-        repeating-linear-gradient(90deg, var(--gingham) 0 12px, transparent 12px 24px);
-    background-blend-mode: normal;
-    border-bottom-left-radius: var(--radius-lg);
-    border-bottom-right-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
 }
 
 .app-header-card {
@@ -133,6 +125,7 @@ a {
     padding: 0.9rem 1rem;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
     box-shadow: var(--shadow);
 }
@@ -154,6 +147,7 @@ a {
 .app-header-sub {
     font-size: 0.82rem;
     color: var(--text-muted);
+    margin-top: 0.2rem;
 }
 
 @keyframes wobble {
@@ -210,14 +204,15 @@ a {
 .nav-item.active,
 .nav-item[aria-current="page"] {
     color: var(--accent-dark);
+    font-weight: 600;
 }
 
 .nav-item-fab {
     flex: 0 0 auto;
-    margin-top: -34px;
+    margin-top: -36px;
 }
 
-/* "Add recipe" button: a frying pan seen from above — orange rim, dark pan, sunny egg + handle. */
+/* "Add recipe" button: orange gradient circle with a white "+". */
 .fab {
     width: 62px;
     height: 62px;
@@ -226,45 +221,15 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at 50% 50%, #3a3330 0 58%, var(--accent) 60% 100%);
-    box-shadow: 0 8px 20px rgba(232, 93, 42, 0.45);
+    background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+    box-shadow: 0 8px 20px rgba(91, 120, 82, 0.45);
     border: 3px solid var(--surface);
 }
 
-.fab::before {
-    content: "";
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    width: 22px;
-    height: 8px;
-    margin-top: -4px;
-    border-radius: 4px;
-    background: var(--accent-dark);
-    z-index: -1;
-}
-
-.fab-egg {
-    width: 30px;
-    height: 26px;
-    border-radius: 48% 52% 45% 55%;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.fab-egg i {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--mustard);
-    color: #7a4b00;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: bold;
+.fab i {
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
 }
 
 /* ---------- Search ---------- */
@@ -273,15 +238,26 @@ a {
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.75rem;
+    height: 46px;
+    padding: 0 0.4rem 0 1rem;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    transition: border-color 0.15s ease;
 }
 
-.search-bar input {
+.search-bar:focus-within {
+    border-color: var(--accent);
+}
+
+.search-bar input[type="text"] {
     flex: 1;
     border: none;
     outline: none;
     background: transparent;
     color: var(--text-primary);
     font-size: 0.95rem;
+    padding: 0;
     min-width: 0;
 }
 
@@ -297,29 +273,43 @@ a {
     padding-bottom: 2px;
 }
 
+/* Centred, but still scrolls from the first chip if the row ever overflows (justify-content:center would clip it). */
+.chip-row > :first-child {
+    margin-left: auto;
+}
+
+.chip-row > :last-child {
+    margin-right: auto;
+}
+
 .chip {
     border: 2px solid var(--border);
     background: var(--surface);
     color: var(--text-primary);
     border-radius: 999px;
-    padding: 0.3rem 0.8rem;
+    padding: 0 0.85rem;
     font-size: 0.82rem;
     font-family: var(--font-display);
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    height: 34px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .chip.on {
-    background: var(--berry);
-    border-color: var(--berry);
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
 }
 
 .chip-static {
-    background: var(--surface-alt);
-    border-color: transparent;
+    background: var(--surface);
+    border-style: dashed;
+    border-color: var(--accent);
+    color: var(--accent-dark);
 }
 
 /* ---------- Recipe grid ---------- */
@@ -400,7 +390,11 @@ a {
 /* ---------- Empty state ---------- */
 .empty-state {
     text-align: center;
-    padding: 2.5rem 1rem;
+    padding: 2rem 1.25rem;
+    margin-top: 0.5rem;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
     color: var(--text-muted);
 }
 
@@ -413,7 +407,16 @@ a {
 
 .empty-state p {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.75rem;
+}
+
+.empty-state-hint {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin-bottom: 1.1rem;
 }
 
 /* ---------- Panels & forms ---------- */
@@ -532,7 +535,7 @@ textarea {
 .btn-app-primary {
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(232, 93, 42, 0.35);
+    box-shadow: 0 4px 12px rgba(91, 120, 82, 0.35);
 }
 
 .btn-app-dark {
@@ -909,9 +912,4 @@ input[type="checkbox"] {
     position: absolute;
     right: 0.75rem;
     top: 0.5rem;
-}
-
-.panel-ocr {
-    border: 2px dashed var(--accent);
-    background: linear-gradient(135deg, rgba(255, 122, 69, 0.08), rgba(255, 92, 138, 0.08));
 }

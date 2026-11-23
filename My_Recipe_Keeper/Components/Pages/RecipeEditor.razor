@@ -3,11 +3,7 @@
 @inject IRecipeRepository RecipeRepository
 @inject IRecipeScraperService ScraperService
 @inject IAlertService AlertService
-@inject IMediaTextService MediaTextService
-@inject IImagePickerService ImagePicker
-@inject ISharedLinkInbox SharedLinkInbox
 @inject ISettingsService SettingsService
-@inject ITranslationService TranslationService
 @inject IRecipeTranslator RecipeTranslator
 @inject TranslationOptions TranslationOptions
 @inject AutoBackupRunner AutoBackup
@@ -48,38 +44,6 @@
         </div>
     </div>
 }
-
-<div class="panel panel-ocr">
-    <div class="panel-title">📸 Recipe in the video?</div>
-    @if (_ocrText is null)
-    {
-        <p class="field-hint" style="margin:0 0 0.6rem;font-size:0.82rem;">
-            Screen-record the reel (or screenshot the recipe bits) and share it to this app, or pick it here.
-            We'll read the text on screen for free, right on your phone.
-        </p>
-        <button class="btn-app btn-app-outline btn-block" disabled="@_ocrBusy" @onclick="PickMediaAsync">
-            @if (_ocrBusy)
-            {
-                <i class="bi bi-arrow-repeat spin"></i> @_ocrStatus
-            }
-            else
-            {
-                <i class="bi bi-camera-reels-fill"></i> <span>Pick screenshots or recording</span>
-            }
-        </button>
-    }
-    else
-    {
-        <p class="field-hint" style="margin:0 0 0.4rem;font-size:0.82rem;">
-            Here's what we read — each blank-line gap is one step. Delete anything that isn't recipe (like packet labels), then add it.
-        </p>
-        <textarea style="min-height:200px;font-size:0.85rem;" @bind="_ocrText"></textarea>
-        <div class="btn-row" style="margin-top:0.5rem;">
-            <button class="btn-app btn-app-outline" @onclick="DiscardOcr">Discard</button>
-            <button class="btn-app btn-app-primary" @onclick="AddOcrToRecipeAsync"><i class="bi bi-plus-lg"></i> Add to recipe</button>
-        </div>
-    }
-</div>
 
 @if (_importing)
 {

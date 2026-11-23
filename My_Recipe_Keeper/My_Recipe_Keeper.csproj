@@ -37,7 +37,7 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#FF7A45" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#7A9A6E" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFF6EC" BaseSize="128,128" />
@@ -57,8 +57,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
-        <!-- Same on-device OCR as Pok_E_List (Google ML Kit on Android): free, offline, no API key. -->
-        <PackageReference Include="Plugin.Maui.OCR" Version="1.1.1" />
         <!-- Pinned for the same reason as Pok_E_List: Android native binary hasn't been republished
              past 2.1.13 on the 3.x line yet (GHSA-2m69-gcr7-jv3q). -->
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.13" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />

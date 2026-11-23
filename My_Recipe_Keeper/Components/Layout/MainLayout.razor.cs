@@ -30,13 +30,6 @@ namespace My_Recipe_Keeper.Components.Layout
             if (shared is not null)
             {
                 Nav.NavigateTo($"/recipe/add?shared={Uri.EscapeDataString(shared)}");
-                return;
-            }
-
-            // Media stays in the inbox; the editor takes it. The nonce makes a repeat share re-trigger.
-            if (SharedLinkInbox.HasMedia)
-            {
-                Nav.NavigateTo($"/recipe/add?media={DateTime.UtcNow.Ticks}");
             }
         }
 

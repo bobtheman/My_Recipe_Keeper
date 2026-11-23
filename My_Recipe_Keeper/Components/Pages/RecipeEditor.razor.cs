@@ -14,15 +14,7 @@ namespace My_Recipe_Keeper.Components.Pages
         [SupplyParameterFromQuery(Name = "shared")]
         public string? Shared { get; set; }
 
-        /// <summary>Set by MainLayout when screenshots/recordings were shared in; the media itself waits in the inbox.</summary>
-        [SupplyParameterFromQuery(Name = "media")]
-        public string? Media { get; set; }
-
         private RecipeEntity _recipe = new();
-        private string? _ocrText;
-        private bool _ocrBusy;
-        private string _ocrStatus = string.Empty;
-        private string? _lastMediaNonce;
         private bool _translating;
         private string _importText = string.Empty;
         private bool _importing;
@@ -36,7 +28,7 @@ namespace My_Recipe_Keeper.Components.Pages
 
         private bool IsNew => Id is null;
 
-        // New recipe: the form stays hidden until an import/OCR result arrives or the user chooses to type their own.
+        // New recipe: the form stays hidden until an import result arrives or the user chooses to type their own.
         private bool ShowForm => !IsNew || _showForm;
 
         private void StartFromScratch() => _showForm = true;
@@ -69,110 +61,6 @@ namespace My_Recipe_Keeper.Components.Pages
                 _importText = Shared;
                 await ImportAsync();
             }
-
-            if (!string.IsNullOrWhiteSpace(Media) && Media != _lastMediaNonce)
-            {
-                _lastMediaNonce = Media;
-                var paths = SharedLinkInbox.TakeMedia();
-                if (paths.Count > 0)
-                {
-                    await ReadMediaAsync(paths);
-                }
-            }
-        }
-
-        private async Task PickMediaAsync()
-        {
-            IReadOnlyList<string> paths;
-            try
-            {
-                paths = await ImagePicker.PickMediaAsync();
-            }
-            catch (Exception ex)
-            {
-                SetBanner($"Couldn't open your gallery: {ex.Message}", "banner-error");
-                return;
-            }
-
-            if (paths.Count > 0)
-            {
-                await ReadMediaAsync(paths);
-            }
-        }
-
-        private async Task ReadMediaAsync(IReadOnlyList<string> paths)
-        {
-            _ocrBusy = true;
-            _ocrStatus = "Getting ready…";
-            _banner = null;
-            StateHasChanged();
-
-            var progress = new Progress<string>(status =>
-            {
-                _ocrStatus = status;
-                _ = InvokeAsync(StateHasChanged);
-            });
-
-            try
-            {
-                var blocks = await MediaTextService.ReadTextBlocksAsync(paths, progress);
-                if (blocks.Count == 0)
-                {
-                    SetBanner("😕 Couldn't spot any text in those. Try screenshots where the recipe text is showing.", "banner-error");
-                    return;
-                }
-
-                _ocrText = string.Join("\n\n", blocks);
-            }
-            catch (Exception ex)
-            {
-                SetBanner($"Couldn't read that: {ex.Message}", "banner-error");
-            }
-            finally
-            {
-                _ocrBusy = false;
-                StateHasChanged();
-            }
-        }
-
-        private void DiscardOcr() => _ocrText = null;
-
-        private async Task AddOcrToRecipeAsync()
-        {
-            // Translate the reviewed OCR text before parsing, same as captions: English headings/units parse best.
-            var text = _ocrText ?? string.Empty;
-            string? translatedFrom = null;
-            var target = await TranslateTargetAsync();
-            if (target is not null && text.Trim().Length > 0)
-            {
-                var translated = await TranslationService.TranslateAsync(text, target);
-                if (translated is not null && !string.Equals(translated.SourceLanguage, target, StringComparison.OrdinalIgnoreCase))
-                {
-                    text = translated.Text;
-                    translatedFrom = translated.SourceLanguage;
-                }
-            }
-
-            var parsed = OverlayTextParser.Parse(text);
-            if (parsed.Ingredients.Count == 0 && parsed.Instructions.Count == 0)
-            {
-                SetBanner("Nothing recipe-like left in that text.", "banner-warn");
-                return;
-            }
-
-            // Append rather than replace: typically the link gave title/photo and this adds the rest,
-            // and several batches of screenshots can be added one after another.
-            _recipe.IngredientsText = AppendLines(_recipe.IngredientsText, parsed.Ingredients);
-            _recipe.InstructionsText = AppendLines(_recipe.InstructionsText, parsed.Instructions);
-            if (string.IsNullOrWhiteSpace(_recipe.Title) && parsed.Title is not null)
-            {
-                _recipe.Title = parsed.Title;
-            }
-
-            _ocrText = null;
-            _showForm = true;
-            var translatedNote = translatedFrom is null ? string.Empty : $" 🌐 Translated from {LanguageName(translatedFrom)}.";
-            SetBanner($"🎉 Added {parsed.Ingredients.Count} ingredients and {parsed.Instructions.Count} steps — tweak anything OCR got wrong, then save.{translatedNote}", "banner-ok");
         }
 
         private async Task TranslateRecipeAsync()
@@ -215,14 +103,6 @@ namespace My_Recipe_Keeper.Components.Pages
             }
         }
 
-        private static string AppendLines(string existing, IEnumerable<string> additions)
-        {
-            var current = existing.Replace("\r", string.Empty).Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
-            var seen = new HashSet<string>(current, StringComparer.OrdinalIgnoreCase);
-            current.AddRange(additions.Where(seen.Add));
-            return RecipeEntity.JoinLines(current);
-        }
-
         private Task OnImportKeyDown(KeyboardEventArgs args) =>
             args.Key == "Enter" ? ImportAsync() : Task.CompletedTask;
 
@@ -259,7 +139,7 @@ namespace My_Recipe_Keeper.Components.Pages
                 {
                     ScrapeSource.StructuredData => "🎉 Got it! Give it a quick check, then save.",
                     ScrapeSource.SocialCaption => "🎉 Pulled this from the post caption — captions can be messy, so give it a once-over.",
-                    _ => "🤏 Got the title and photo, but the caption has no recipe — it's probably shown in the video. Screen-record it and use 📸 below."
+                    _ => "🤏 Got the title and photo, but the caption has no recipe — it's probably shown in the video. Add the ingredients and steps below."
                 };
 
                 if (result.TranslatedFrom is not null)

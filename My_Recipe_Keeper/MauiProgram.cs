@@ -49,8 +49,6 @@ namespace My_Recipe_Keeper
             builder.Services.AddSingleton<IAuthorizationCodeProvider, LoopbackAuthorizationCodeProvider>();
             builder.Services.AddSingleton<IAlertService, MauiAlertService>();
             builder.Services.AddSingleton<IShareService, MauiShareService>();
-            builder.Services.AddSingleton<IMediaTextService, MauiMediaTextService>();
-            builder.Services.AddSingleton<IImagePickerService, MauiImagePickerService>();
 
             // Core services — plain .NET, unit tested independently of Maui in My_Recipe_Keeper_Unit_Test.
             // Singleton repository: backup/restore needs every consumer on the same connection.

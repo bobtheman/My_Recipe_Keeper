@@ -19,21 +19,6 @@ namespace My_Recipe_Keeper.Tests.Services
         }
 
         [Fact]
-        public void PostMedia_RaisesEventAndTakeMediaClearsPending()
-        {
-            var sut = new SharedLinkInbox();
-            var raised = 0;
-            sut.LinkReceived += () => raised++;
-
-            sut.PostMedia(new[] { "a.jpg", "b.mp4" });
-
-            Assert.Equal(1, raised);
-            Assert.Equal(new[] { "a.jpg", "b.mp4" }, sut.TakeMedia());
-            Assert.Empty(sut.TakeMedia());
-            Assert.Null(sut.Take());
-        }
-
-        [Fact]
         public void Post_BlankText_Ignored()
         {
             var sut = new SharedLinkInbox();

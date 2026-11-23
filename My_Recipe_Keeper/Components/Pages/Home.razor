@@ -4,8 +4,10 @@
 
 <div class="app-header">
     <div class="app-header-card">
-        <p class="app-header-title">What's cooking?</p>
-        <div class="app-header-sub">@_totalCount @(_totalCount == 1 ? "recipe" : "recipes") in your cookbook</div>
+        <div>
+            <p class="app-header-title">What's cooking?</p>
+            <div class="app-header-sub">@_totalCount @(_totalCount == 1 ? "recipe" : "recipes") in your cookbook</div>
+        </div>
     </div>
 </div>
 
@@ -35,9 +37,9 @@ else if (_page.Items.Count == 0)
     <div class="empty-state">
         @if (string.IsNullOrWhiteSpace(_searchText) && !_favoriteOnly)
         {
-            <span class="big-emoji">🥄</span>
+            <span class="big-emoji">📖</span>
             <p>Your cookbook is empty!</p>
-            <div class="text-muted" style="font-size:0.85rem;margin-bottom:1rem;">
+            <div class="text-muted empty-state-hint">
                 Share a recipe link from Instagram, TikTok or any website straight to this app, or paste one in.
             </div>
             <button class="btn-app btn-app-primary" @onclick="AddRecipe"><i class="bi bi-plus-lg"></i> Add your first recipe</button>
