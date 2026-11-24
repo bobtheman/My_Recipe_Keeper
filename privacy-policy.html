@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — My Recipe Keeper</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --card: #ffffff;
+    --ink: #2b2823;
+    --muted: #6b6558;
+    --accent: #8a6d4f;
+    --accent-light: #f1e9df;
+    --border: #e8e1d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 24px 100px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  header .badge {
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 2.2rem;
+    margin: 0 0 8px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .updated {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .lede {
+    font-size: 1.08rem;
+    color: var(--muted);
+    text-align: center;
+    max-width: 520px;
+    margin: 20px auto 0;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--accent);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+  ul { margin: 0 0 14px; padding-left: 22px; }
+  ul:last-child { margin-bottom: 0; }
+  li { margin-bottom: 10px; }
+  li:last-child { margin-bottom: 0; }
+  strong { color: var(--ink); font-weight: 700; }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--accent-light);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: var(--accent);
+  }
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+  }
+  a:hover { text-decoration-color: var(--accent); }
+  footer {
+    text-align: center;
+    margin-top: 44px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 40px 16px 72px; }
+    .card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge">Privacy Policy</span>
+    <h1>My Recipe Keeper</h1>
+    <div class="updated">Last updated: November 24, 2026</div>
+    <p class="lede">My Recipe Keeper is a personal cookbook app. This policy explains what data the app handles and how.</p>
+  </header>
+
+  <div class="card">
+    <h2>Data the app stores</h2>
+    <ul>
+      <li><strong>Your recipes</strong> (title, ingredients, instructions, times, servings, category, notes, favourites, the link you imported from and the address of its photo) are stored <strong>locally on your device only</strong>, in a private app database. They are never sent to the developer.</li>
+      <li><strong>Your preferences</strong> (theme, auto backup, translation and sharing options) are stored locally on your device.</li>
+      <li><strong>Google sign-in tokens</strong>, if you enable backup, are kept in your device's secure storage (Android Keystore). They are used only to talk to your own Google Drive.</li>
+      <li>Android's own system backup is turned off for this app, so your recipe database is not copied anywhere unless you use the app's Google Drive backup.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Importing recipes from links</h2>
+    <p>When you share or paste a link into the app, it fetches that page directly from the website (or, for TikTok links, from TikTok's public <code>oembed</code> endpoint) to read the recipe. Only the link you chose is requested. Recipe photos are loaded from the website they came from when you view a recipe.</p>
+    <p>Those websites receive a normal web request from your device (including your IP address) and are covered by their own privacy policies. The app does not log in to any of these sites or send them your other recipes.</p>
+  </div>
+
+  <div class="card">
+    <h2>Translation</h2>
+    <p>The <strong>"Translate recipes to English"</strong> setting is on by default. When it is on, the text of a recipe you import is sent to Google's translation service to detect its language and translate it. No account information is sent with it.</p>
+    <p>You can turn this off at any time in Settings. Recipes are then kept in their original language and their text is not sent to Google.</p>
+  </div>
+
+  <div class="card">
+    <h2>Google Drive backup (optional)</h2>
+    <p>If you choose to sign in, My Recipe Keeper asks for Google sign-in with the restricted <code>drive.appdata</code> scope. This scope only gives the app a private, hidden app folder in your Drive. It <strong>cannot see or touch any of your other Drive files</strong>, and other apps cannot see this folder.</p>
+    <ul>
+      <li>Your recipe database is uploaded to that hidden folder when you tap "Back up now", or after each change if you turn on "Auto backup after changes". Older backups are removed automatically.</li>
+      <li>This data only travels between your device and your own Google account. The developer has no access to it.</li>
+      <li>"Sign out" in Settings removes the saved Google tokens from your device. To revoke access fully, use <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions</a>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Sharing</h2>
+    <p>When you share a recipe or shopping list, the app hands the text to the app you pick (for example WhatsApp or a notes app) through Android's standard share sheet. What happens next is governed by that app. My Recipe Keeper only asks Android whether WhatsApp is installed so it can offer it directly.</p>
+  </div>
+
+  <div class="card">
+    <h2>Permissions</h2>
+    <ul>
+      <li><strong>Internet / network state</strong>: to import recipes from links, load recipe photos, translate, and back up to Google Drive.</li>
+    </ul>
+    <p>The app does not request camera, location, contacts, microphone or storage permissions.</p>
+  </div>
+
+  <div class="card">
+    <h2>Data we do not collect</h2>
+    <p>My Recipe Keeper contains no analytics, ads, or crash-reporting SDKs. The developer does not run a server for the app and does not receive any usage data, recipes, or personal information from it.</p>
+  </div>
+
+  <div class="card" id="delete-data">
+    <h2>Deleting your data</h2>
+    <p>My Recipe Keeper has no server-side account, so there is nothing to delete on our end.</p>
+    <ul>
+      <li>Delete individual recipes in the app, or remove everything by uninstalling the app or using Android Settings &rarr; Apps &rarr; My Recipe Keeper &rarr; Storage &rarr; "Clear storage". This erases your recipes, preferences and saved Google sign-in from the device.</li>
+      <li>If you used Google Drive backup, delete the backup from Google Drive on the web: Settings &rarr; Manage apps &rarr; My Recipe Keeper &rarr; Options &rarr; "Delete hidden app data". You can also revoke the app's access at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions</a>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Contact</h2>
+    <p>Questions about this policy: open an issue at <a href="https://github.com/bobtheman/My_Recipe_Keeper/issues" target="_blank" rel="noopener">github.com/bobtheman/My_Recipe_Keeper/issues</a></p>
+  </div>
+
+  <footer>My Recipe Keeper — your cookbook stays on your device.</footer>
+
+</div>
+</body>
+</html>
